@@ -2,11 +2,16 @@
 #define ENCODER_USE_INTERRUPTS
 #define ENCODER_OPTIMIZE_INTERRUPTS
 
+//#define CONTROL_BOARD_ONE
+
 #include <Encoder.h>
 #include <RegulatedMotor.h>;
 
-const int M1ID = 3;
-const int M2ID = 4;
+const int M1ID = 1;
+const int M2ID = 2;
+const String BOARDID = "ID:2";
+
+
 /*
 timer 1 (controls pin 12, 11);
 timer 2 (controls pin 10, 9);
@@ -40,26 +45,38 @@ void setup(){
         TCCR2B = TCCR2B & 0b11111000 | 0x02;
         bitSet(TCCR1B, WGM12);
         
-	m1.setSampleTime(5);
-	m2.setSampleTime(5);
+	m1.setSampleTime(6);
+	m2.setSampleTime(6);
         m1.setPID(0.2,0.07,0.0,0);
         m2.setPID(0.2,0.07,0.0,0);
 
 	Serial.begin(115200);
-        Serial.println("ID:3");
+        
+        Serial.println(BOARDID);   
+        
         //m1.setSpeed(1000);
         
 }
+
+int lastHeartbeat = 0;
 
 void loop(){
 	processInput();
 	m1.run();
 	m2.run();
+        if ( millis()-lastHeartbeat > 1000 ){
+          m1.setState(3);
+          m2.setState(3);
+        }
 }
 
 
 
 void dispatchMessage(String tag, int* ints, float* floats, int intCount, int floatCount){
+  if (tag.equals("H")){
+        lastHeartbeat = millis();
+  }
+  
   if (tag.equals("MSP")){
     if ( ints[0] == M1ID ) {
       m1.setSpeed(ints[1]);
@@ -71,12 +88,25 @@ void dispatchMessage(String tag, int* ints, float* floats, int intCount, int flo
     }
     return;
   } 
-
-
+  
+  if (tag.equals("MST")){
+    if ( ints[0] == M1ID ) {
+      m1.setState(ints[1]);
+      return;
+    }
+    if ( ints[0] == M2ID ) {
+      m2.setState(ints[1]);
+      return;
+    }
+    return;
+  } 
+  
   if (tag.equals("MPID")){
   	if ( ints[0] == M1ID ) m1.setPID(floats[0],floats[1],floats[2],floats[3]);
   	if ( ints[0] == M2ID ) m2.setPID(floats[0],floats[1],floats[2],floats[3]);
   }
+  
+
 
 }
 
