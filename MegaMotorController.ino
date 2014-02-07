@@ -6,10 +6,8 @@
 
 #include <Encoder.h>
 #include <RegulatedMotor.h>;
-
-const int M1ID = 1;
-const int M2ID = 2;
-const String BOARDID = "ID:2";
+const int M1ID = 1; const int M2ID = 2; const String BOARDID = "ID:2";
+//const int M1ID = 3; const int M2ID = 4; const String BOARDID = "ID:3";
 
 
 /*
