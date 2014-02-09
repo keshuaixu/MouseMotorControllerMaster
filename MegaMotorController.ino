@@ -6,8 +6,8 @@
 
 #include <Encoder.h>
 #include <RegulatedMotor.h>;
-const int M1ID = 1; const int M2ID = 2; const String BOARDID = "ID:2";
-//const int M1ID = 3; const int M2ID = 4; const String BOARDID = "ID:3";
+//const int M1ID = 1; const int M2ID = 2; const String BOARDID = "ID:2";
+const int M1ID = 3; const int M2ID = 4; const String BOARDID = "ID:3";
 
 
 /*
@@ -56,25 +56,29 @@ void setup(){
         
 }
 
-int lastHeartbeat = 0;
+long lastHeartbeat = 0;
 
 void loop(){
 	processInput();
 	m1.run();
 	m2.run();
+
         if ( millis()-lastHeartbeat > 1000 ){
           m1.setState(3);
           m2.setState(3);
         }
+        
 }
 
 
 
 void dispatchMessage(String tag, int* ints, float* floats, int intCount, int floatCount){
+  lastHeartbeat = millis();
+  /*
   if (tag.equals("H")){
-        lastHeartbeat = millis();
+        
   }
-  
+  */
   if (tag.equals("MSP")){
     if ( ints[0] == M1ID ) {
       m1.setSpeed(ints[1]);
