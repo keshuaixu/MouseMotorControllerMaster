@@ -6,8 +6,8 @@
 
 #include <Encoder.h>
 #include <RegulatedMotor.h>;
-//const int M1ID = 1; const int M2ID = 2; const String BOARDID = "ID:2";
-const int M1ID = 3; const int M2ID = 4; const String BOARDID = "ID:3";
+const int M1ID = 1; const int M2ID = 2; const String BOARDID = "ID:2";
+//const int M1ID = 3; const int M2ID = 4; const String BOARDID = "ID:3";
 
 
 /*
@@ -40,8 +40,9 @@ void setup(){
 	pinMode(9,OUTPUT);
 	pinMode(10,OUTPUT);
 
+        TCCR2A = _BV(COM2A1) | _BV(COM2B1) | _BV(WGM21) | _BV(WGM20);
         TCCR2B = TCCR2B & 0b11111000 | 0x02;
-        bitSet(TCCR1B, WGM12);
+        //bitSet(TCCR1B, WGM12);
         
 	m1.setSampleTime(6);
 	m2.setSampleTime(6);
