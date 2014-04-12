@@ -1,59 +1,46 @@
 #define INPUT_PULLUP
 #define ENCODER_USE_INTERRUPTS
 #define ENCODER_OPTIMIZE_INTERRUPTS
-
+#include <PWM.h>
 //#define CONTROL_BOARD_ONE
 
 #include <Encoder.h>
 #include <RegulatedMotor.h>;
-const int M1ID = 1; const int M2ID = 2; const String BOARDID = "ID:2";
-//const int M1ID = 3; const int M2ID = 4; const String BOARDID = "ID:3";
+//const int M1ID = 1; const int M2ID = 2; const String BOARDID = "ID:2";
+const int M1ID = 3; const int M2ID = 4; const String BOARDID = "ID:3";
 
 
-/*
-timer 1 (controls pin 12, 11);
-timer 2 (controls pin 10, 9);
-
-prescaler = 1 ---> PWM frequency is 31000 Hz
-prescaler = 2 ---> PWM frequency is 4000 Hz
-prescaler = 3 ---> PWM frequency is 490 Hz (default value)
-prescaler = 4 ---> PWM frequency is 120 Hz
-prescaler = 5 ---> PWM frequency is 30 Hz
-prescaler = 6 ---> PWM frequency is <20 Hz
-
-*/
-
-//TCCR1B = TCCR1B & 0b11111000 | 1;
 
 
 Encoder enc1(18,19);
 Encoder enc2(20,21);
 
 RegulatedMotor m1(&enc1,4,5,9);
-RegulatedMotor m2(&enc2,6,7,10);
+RegulatedMotor m2(&enc2,6,7,8);
 
 void setup(){
+        Serial.begin(115200);
 	pinMode(4,OUTPUT);
 	pinMode(5,OUTPUT);
 	pinMode(6,OUTPUT);
 	pinMode(7,OUTPUT);
 	pinMode(9,OUTPUT);
-	pinMode(10,OUTPUT);
+	pinMode(8,OUTPUT);
 
-        TCCR2A = _BV(COM2A1) | _BV(COM2B1) | _BV(WGM21) | _BV(WGM20);
-        TCCR2B = TCCR2B & 0b11111000 | 0x02;
-        //bitSet(TCCR1B, WGM12);
         
+        InitTimersSafe();      
+        SetPinFrequencySafe(9, 16000);
+        SetPinFrequencySafe(8, 16000);
+                
 	m1.setSampleTime(6);
 	m2.setSampleTime(6);
-        m1.setPID(0.2,0.07,0.0,0);
-        m2.setPID(0.2,0.07,0.0,0);
+        m1.setPID(0.01,0.01,0.0,0);
+        m2.setPID(0.01,0.01,0.0,0);
 
-	Serial.begin(115200);
+	
         
         Serial.println(BOARDID);   
         
-        //m1.setSpeed(1000);
         
 }
 
@@ -63,11 +50,13 @@ void loop(){
 	processInput();
 	m1.run();
 	m2.run();
-
+        
+        
         if ( millis()-lastHeartbeat > 1000 ){
           m1.setState(3);
           m2.setState(3);
         }
+        
         
 }
 
