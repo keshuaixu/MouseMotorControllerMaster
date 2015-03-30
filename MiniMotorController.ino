@@ -12,7 +12,7 @@ Encoder enc2(3,5);
 RegulatedMotor m1(&enc1,7,6,10);
 RegulatedMotor m2(&enc2,8,11,9);
 
-KinematicController kc(&m1,&m2,1,-1,100,50,64*4);
+KinematicController kc(&m1,&m2,1,1,100,50,64*30);
 
 void setup(){
   Serial.begin(115200);
@@ -32,9 +32,10 @@ void setup(){
   m1.setPID(0.19,0.0085,0.02,0.0);
   m2.setPID(0.19,0.0085,0.02,0.0);
 
-  kc.setAcceleration(100,100,100,100);
+  kc.setAcceleration(2000,4000,5000,5000);
+  kc.goVelocity(500,0);
 
-  kc.goPosition(2000,0,50,50);
+  //m2.setSpeed(-1000);
 }
 
 long lastHeartbeat = 0;
@@ -43,10 +44,11 @@ void loop(){
   kc.run();
 	m1.run();
 	m2.run();
-  /*if ( millis()-lastHeartbeat > 10000 ){
-    m1.setState(3);
-    m2.setState(3);
-  }*/
+
+  if ( millis()-lastHeartbeat > 5000 ){
+    kc.goVelocity(-500,0);
+    lastHeartbeat = millis();
+  }
 //Serial.println(enc1.read());
 
 }
