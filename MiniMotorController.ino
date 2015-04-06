@@ -51,19 +51,29 @@ void loop(){
 }
 
 
+int responseState;
 
 void receiveEvent(int howMany){
   byte command = Wire.read();
+  uint16_t arg[16];
   switch (command) {
     case COMMAND_HEARTBEAT:
       lastHeartbeat = millis();
     break;
     case COMMAND_SETACCELERATION:
       for (int i = 0; i < 4; i++){
-        uint16_t arg = Wire.read();
-        arg |= Wire.read() << 8;
-        Serial.println(arg);
+        arg[i] = Wire.read();
+        arg[i] |= Wire.read() << 8;
       }
+      kc.setAcceleration(arg[0],arg[1],arg[2],arg[3]);
+      Serial.println(arg[0]);
+    break;
+    case COMMAND_GOVELOCITY:
+      for (int i = 0; i < 2; i++){
+        arg[i] = Wire.read();
+        arg[i] |= Wire.read() << 8;
+      }
+      kc.goVelocity(arg[0],arg[1]);
     break;
     default:
     break;
