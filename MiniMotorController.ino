@@ -50,38 +50,26 @@ void loop(){
   }
 }
 
-int receiveState;
-byte buffer[32];
-byte pointer;
 
 
 void receiveEvent(int howMany){
-  while(0 < Wire.available()){
-    byte incoming = Wire.read(); // receive byte as a character
-    Serial.println(incoming,BIN);
-    switch (receiveState) {
-      case COMMAND_BYTE:
-        receiveState = incoming;
-        pointer = 0;
-      break;
-      case COMMAND_HEARTBEAT:
-        lastHeartbeat = millis();
-        receiveState = COMMAND_BYTE;
-      break;
-      case COMMAND_SETACCELERATION:
-        buffer[pointer++] = incoming;
-        if (pointer >= COMMAND_SETACCELERATION_LENGTH){
-          receiveState = COMMAND_BYTE;
-          for (int i = 0; i < 4; i++){
-            unsigned int arg = buffer[2*i];
-            arg |= buffer[2*i + 1] << 8;
-            //Serial.println(arg);
-          }
-        }
-      break;
-      default:
-      break;
-
-    }
+  byte command = Wire.read();
+  switch (command) {
+    case COMMAND_HEARTBEAT:
+      lastHeartbeat = millis();
+    break;
+    case COMMAND_SETACCELERATION:
+      for (int i = 0; i < 4; i++){
+        uint16_t arg = Wire.read();
+        arg |= Wire.read() << 8;
+        Serial.println(arg);
+      }
+    break;
+    default:
+    break;
+  }
+  while (Wire.available() > 0){
+    Wire.read();
+    Serial.println("too many");
   }
 }
