@@ -47,23 +47,23 @@ void MotorControllerMaster::coast(){
 	Wire.endTransmission();	
 }
 
-void MotorControllerMaster::getEncoder(long* left, long* right){
-	uint32_t remoteleft;
-	uint32_t remoteright;
+void MotorControllerMaster::getEncoder(long* fwd, long* ccw){
+	int32_t remotefwd;
+	int32_t remoteccw;
 	Wire.beginTransmission(MOTOR_CONTROLLER_ADDRESS);
 	Wire.write(COMMAND_REPORTENCODER);
 	Wire.endTransmission();	
-	int i = Wire.requestFrom(MOTOR_CONTROLLER_ADDRESS, 8);
-	remoteleft = Wire.read();
-	remoteleft |= Wire.read() << 8;
-	remoteleft |= Wire.read() << 16;
-	remoteleft |= Wire.read() << 24;
-	remoteright = Wire.read();
-	remoteright |= Wire.read() << 8;
-	remoteright |= Wire.read() << 16;
-	remoteright |= Wire.read() << 24;	
-	*left = remoteleft;
-	*right = remoteright;
+	Wire.requestFrom(MOTOR_CONTROLLER_ADDRESS, 8);
+	remotefwd = Wire.read();
+	remotefwd |= Wire.read() << 8;
+	remotefwd |= Wire.read() << 16;
+	remotefwd |= Wire.read() << 24;
+	remoteccw = Wire.read();
+	remoteccw |= Wire.read() << 8;
+	remoteccw |= Wire.read() << 16;
+	remoteccw |= Wire.read() << 24;	
+	*fwd = remotefwd;
+	*ccw = remoteccw;
 }
 
 byte MotorControllerMaster::isStandby(){

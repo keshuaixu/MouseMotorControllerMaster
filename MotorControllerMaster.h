@@ -2,7 +2,7 @@
 #define MotorControllerMaster_h
 #include "Arduino.h"
 #include "Wire.h"
-#include "MiniMotorControllerDefinitions.h"
+#include "MotorControllerDefinitions.h"
 
 class MotorControllerMaster{
 public:
